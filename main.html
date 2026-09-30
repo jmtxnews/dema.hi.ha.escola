@@ -8,8 +8,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
-  
-  <script src="https://cdn.jsdelivr.net/npm/js-confetti@latest/dist/js-confetti.browser.js"></script>
 
   <style>
     :root {
@@ -19,10 +17,8 @@
       --primary-hover: #3a0ca3;
       --text-main: #2b2d42;
       --text-muted: #6c757d;
-      
       --color-yes: #2ec4b6;
       --color-no: #e63946;
-      
       --shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
       --radius: 28px;
     }
@@ -88,7 +84,7 @@
     .ask-btn {
       font-family: 'Fredoka', sans-serif;
       background: linear-gradient(135deg, var(--primary), var(--primary-hover));
-      color: white;
+      color: #ffffff;
       border: none;
       font-size: 1.35rem;
       padding: 18px 36px;
@@ -179,7 +175,7 @@
     <h1>Demà hi ha escola a Carcaixent?</h1>
 
     <div class="action-area">
-      <button id="checkBtn" class="ask-btn">
+      <button id="checkBtn" class="ask-btn" type="button">
         <span>Comprovar ara</span> 🔍
       </button>
     </div>
@@ -196,151 +192,120 @@
   </div>
 
   <script>
-    const jsConfetti = new JSConfetti();
+    document.addEventListener('DOMContentLoaded', function() {
+      var SCHOOL_YEAR = {
+        start: new Date(2026, 8, 9),
+        end: new Date(2027, 5, 18)
+      };
 
-    const SCHOOL_YEAR = {
-      start: new Date(2026, 8, 9),
-      end: new Date(2027, 5, 18)
-    };
+      var HOLIDAYS = {
+        '2026-10-09': 'Diada de la Comunitat Valenciana',
+        '2026-10-12': 'Festa Nacional d\'Espanya',
+        '2026-12-07': 'No lectiu local (Carcaixent)',
+        '2026-12-08': 'Dia de la Immaculada Concepció',
+        '2027-03-17': 'No lectiu local (Falles)',
+        '2027-03-18': 'No lectiu local (Falles)',
+        '2027-03-19': 'Sant Josep / Falles'
+      };
 
-    const HOLIDAYS = {
-      '2026-10-09': 'Diada de la Comunitat Valenciana',
-      '2026-10-12': 'Festa Nacional d\'Espanya',
-      '2026-12-07': 'No lectiu local (Carcaixent)',
-      '2026-12-08': 'Dia de la Immaculada Concepció',
-      '2027-03-17': 'No lectiu local (Falles)',
-      '2027-03-18': 'No lectiu local (Falles)',
-      '2027-03-19': 'Sant Josep / Falles'
-    };
+      var VACATION_PERIODS = [
+        {
+          name: 'Vacances de Nadal 🎄',
+          start: new Date(2026, 11, 22),
+          end: new Date(2027, 0, 6)
+        },
+        {
+          name: 'Vacances de Pasqua 🐣',
+          start: new Date(2027, 2, 25),
+          end: new Date(2027, 3, 5)
+        }
+      ];
 
-    const VACATION_PERIODS = [
-      {
-        name: 'Vacances de Nadal 🎄',
-        start: new Date(2026, 11, 22),
-        end: new Date(2027, 0, 6)
-      },
-      {
-        name: 'Vacances de Pasqua 🐣',
-        start: new Date(2027, 2, 25),
-        end: new Date(2027, 3, 5)
-      }
-    ];
+      function checkSchoolTomorrow(baseDate) {
+        if (!baseDate) baseDate = new Date();
+        var tomorrow = new Date(baseDate);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        tomorrow.setHours(0, 0, 0, 0);
 
-    function checkSchoolTomorrow(baseDate = new Date()) {
-      const tomorrow = new Date(baseDate);
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      tomorrow.setHours(0, 0, 0, 0);
-
-      const dayOfWeek = tomorrow.getDay();
-      const year = tomorrow.getFullYear();
-      const month = String(tomorrow.getMonth() + 1).padStart(2, '0');
-      const day = String(tomorrow.getDate()).padStart(2, '0');
-      const formattedDateStr = `${year}-${month}-${day}`;
-      
-      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-      const dateFormattedDisplay = tomorrow.toLocaleDateString('ca-ES', options);
-
-      const startDate = new Date(SCHOOL_YEAR.start); startDate.setHours(0,0,0,0);
-      const endDate = new Date(SCHOOL_YEAR.end); endDate.setHours(0,0,0,0);
-
-      if (tomorrow < startDate || tomorrow > endDate) {
-        return {
-          hasSchool: false,
-          reason: "No! Estem de vacances d'estiu!",
-          dateText: `Demà és ${dateFormattedDisplay}`
-        };
-      }
-
-      if (dayOfWeek === 0) {
-        return {
-          hasSchool: false,
-          reason: "No! Demà és diumenge! 😴",
-          dateText: `Demà és ${dateFormattedDisplay}`
-        };
-      }
-      if (dayOfWeek === 6) {
-        return {
-          hasSchool: false,
-          reason: "No! Demà és dissabte! 🎉",
-          dateText: `Demà és ${dateFormattedDisplay}`
-        };
-      }
-
-      for (const period of VACATION_PERIODS) {
-        const pStart = new Date(period.start); pStart.setHours(0,0,0,0);
-        const pEnd = new Date(period.end); pEnd.setHours(0,0,0,0);
+        var dayOfWeek = tomorrow.getDay();
+        var year = tomorrow.getFullYear();
+        var month = String(tomorrow.getMonth() + 1).padStart(2, '0');
+        var day = String(tomorrow.getDate()).padStart(2, '0');
+        var formattedDateStr = year + '-' + month + '-' + day;
         
-        if (tomorrow >= pStart && tomorrow <= pEnd) {
+        var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        var dateFormattedDisplay = tomorrow.toLocaleDateString('ca-ES', options);
+
+        var startDate = new Date(SCHOOL_YEAR.start); startDate.setHours(0,0,0,0);
+        var endDate = new Date(SCHOOL_YEAR.end); endDate.setHours(0,0,0,0);
+
+        if (tomorrow < startDate || tomorrow > endDate) {
           return {
             hasSchool: false,
-            reason: `No! Estem a les ${period.name}!`,
-            dateText: `Demà és ${dateFormattedDisplay}`
+            reason: "No! Estem de vacances d'estiu!",
+            dateText: "Demà és " + dateFormattedDisplay
           };
         }
-      }
 
-      if (HOLIDAYS[formattedDateStr]) {
+        if (dayOfWeek === 0) {
+          return {
+            hasSchool: false,
+            reason: "No! Demà és diumenge! 😴",
+            dateText: "Demà és " + dateFormattedDisplay
+          };
+        }
+        if (dayOfWeek === 6) {
+          return {
+            hasSchool: false,
+            reason: "No! Demà és dissabte! 🎉",
+            dateText: "Demà és " + dateFormattedDisplay
+          };
+        }
+
+        for (var i = 0; i < VACATION_PERIODS.length; i++) {
+          var period = VACATION_PERIODS[i];
+          var pStart = new Date(period.start); pStart.setHours(0,0,0,0);
+          var pEnd = new Date(period.end); pEnd.setHours(0,0,0,0);
+          
+          if (tomorrow >= pStart && tomorrow <= pEnd) {
+            return {
+              hasSchool: false,
+              reason: "No! Estem a les " + period.name + "!",
+              dateText: "Demà és " + dateFormattedDisplay
+            };
+          }
+        }
+
+        if (HOLIDAYS[formattedDateStr]) {
+          return {
+            hasSchool: false,
+            reason: "No! És festiu: " + HOLIDAYS[formattedDateStr] + " 🎉",
+            dateText: "Demà és " + dateFormattedDisplay
+          };
+        }
+
         return {
-          hasSchool: false,
-          reason: `No! És festiu: ${HOLIDAYS[formattedDateStr]} 🎉`,
-          dateText: `Demà és ${dateFormattedDisplay}`
+          hasSchool: true,
+          reason: "SÍ! Demà hi ha escola. Prepara la motxilla! 🎒📚",
+          dateText: "Demà és " + dateFormattedDisplay
         };
       }
 
-      return {
-        hasSchool: true,
-        reason: "SÍ! Demà hi ha escola. Prepara la motxilla! 🎒📚",
-        dateText: `Demà és ${dateFormattedDisplay}`
-      };
-    }
+      var checkBtn = document.getElementById('checkBtn');
+      var resultBox = document.getElementById('resultBox');
+      var statusBadge = document.getElementById('statusBadge');
+      var reasonText = document.getElementById('reasonText');
+      var dateInfo = document.getElementById('dateInfo');
 
-    function playSound(isYes) {
-      try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.connect(gain);
-        gain.connect(ctx.destination);
+      if (checkBtn) {
+        checkBtn.addEventListener('click', function() {
+          var res = checkSchoolTomorrow();
 
-        if (isYes) {
-          osc.frequency.setValueAtTime(440, ctx.currentTime);
-          osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.2);
-        } else {
-          osc.frequency.setValueAtTime(330, ctx.currentTime);
-          osc.frequency.exponentialRampToValueAtTime(165, ctx.currentTime + 0.3);
-        }
+          statusBadge.textContent = res.hasSchool ? "SÍ!" : "NO!";
+          reasonText.textContent = res.reason;
+          dateInfo.textContent = res.dateText;
 
-        gain.gain.setValueAtTime(0.15, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
-
-        osc.start();
-        osc.stop(ctx.currentTime + 0.3);
-      } catch (e) {
-      }
-    }
-
-    const checkBtn = document.getElementById('checkBtn');
-    const resultBox = document.getElementById('resultBox');
-    const statusBadge = document.getElementById('statusBadge');
-    const reasonText = document.getElementById('reasonText');
-    const dateInfo = document.getElementById('dateInfo');
-
-    checkBtn.addEventListener('click', () => {
-      const res = checkSchoolTomorrow();
-
-      statusBadge.textContent = res.hasSchool ? "SÍ!" : "NO!";
-      reasonText.textContent = res.reason;
-      dateInfo.textContent = res.dateText;
-
-      resultBox.className = `result-box show ${res.hasSchool ? 'yes' : 'no'}`;
-
-      playSound(res.hasSchool);
-
-      if (!res.hasSchool) {
-        jsConfetti.addConfetti({
-          emojis: ['🎉', '✨', '🎈', '⚽', '🏖️'],
-          emojiSize: 30,
-          confettiNumber: 35,
+          resultBox.className = "result-box show " + (res.hasSchool ? "yes" : "no");
         });
       }
     });
