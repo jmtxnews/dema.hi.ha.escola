@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Demà hi ha escola a Carcaixent?</title>
+  
+  <!-- Tipografia Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Llibreria JSConfetti per a efecte festiu -->
+  <script src="https://cdn.jsdelivr.net/npm/js-confetti@latest/dist/js-confetti.browser.js"></script>
+
+  <style>
+    :root {
+      --bg-color: #f4f7fe;
+      --card-bg: #ffffff;
+      --primary: #4361ee;
+      --primary-hover: #3a0ca3;
+      --text-main: #2b2d42;
+      --text-muted: #6c757d;
+      
+      --color-yes: #2ec4b6;
+      --color-no: #e63946;
+      
+      --shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+      --radius: 28px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      background-image: radial-gradient(#e0e7ff 1.5px, transparent 1.5px);
+      background-size: 24px 24px;
+    }
+
+    .container {
+      background: var(--card-bg);
+      width: 100%;
+      max-width: 520px;
+      padding: 36px 28px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      border: 3px solid #eef2ff;
+    }
+
+    .header-tag {
+      display: inline-block;
+      background-color: #e0e7ff;
+      color: var(--primary);
+      font-weight: 800;
+      font-size: 0.85rem;
+      padding: 6px 14px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 2rem;
+      color: var(--text-main);
+      margin-bottom: 24px;
+      line-height: 1.25;
+    }
+
+    .action-area {
+      margin: 20px 0;
+    }
+
+    .ask-btn {
+      font-family: 'Fredoka', sans-serif;
+      background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+      color: white;
+      border: none;
+      font-size: 1.35rem;
+      padding: 18px 36px;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(67, 97, 238, 0.35);
+      transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      user-select: none;
+    }
+
+    .ask-btn:hover {
+      transform: translateY(-4px) scale(1.03);
+      box-shadow: 0 12px 25px rgba(67, 97, 238, 0.45);
+    }
+
+    .ask-btn:active {
+      transform: translateY(1px) scale(0.98);
+    }
+
+    .result-box {
+      margin-top: 24px;
+      padding: 24px 20px;
+      border-radius: 20px;
+      opacity: 0;
+      transform: translateY(15px) scale(0.95);
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      display: none;
+    }
+
+    .result-box.show {
+      display: block;
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .result-box.yes {
+      background-color: #e6f9f7;
+      border: 2px solid var(--color-yes);
+    }
+
+    .result-box.no {
+      background-color: #ffeef0;
+      border: 2px solid var(--color-no);
+    }
+
+    .status-badge {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 2.8rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .result-box.yes .status-badge {
+      color: var(--color-yes);
+    }
+
+    .result-box.no .status-badge {
+      color: var(--color-no);
+    }
+
+    .reason-text {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 6px;
+    }
+
+    .date-info {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    footer {
+      margin-top: 24px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header-tag">CEIP Víctor Oroval</div>
+    <h1>Demà hi ha escola a Carcaixent?</h1>
+
+    <div class="action-area">
+      <button id="checkBtn" class="ask-btn">
+        <span>Comprovar ara</span> 🔍
+      </button>
+    </div>
+
+    <div id="resultBox" class="result-box">
+      <span id="statusBadge" class="status-badge"></span>
+      <p id="reasonText" class="reason-text"></p>
+      <p id="dateInfo" class="date-info"></p>
+    </div>
+
+    <footer>
+      Calendari escolar Curs 2026-2027
+    </footer>
+  </div>
+
+  <script>
+    const jsConfetti = new JSConfetti();
+
+    // Calendari de Festius i Vacances 2026-2027 (CEIP Víctor Oroval - Carcaixent)
+    const SCHOOL_YEAR = {
+      start: new Date(2026, 8, 9),   // 9 setembre 2026
+      end: new Date(2027, 5, 18)     // 18 juny 2027
+    };
+
+    // Dies festius o no lectius puntuals (format: YYYY-MM-DD)
+    const HOLIDAYS = {
+      '2026-10-09': 'Diada de la Comunitat Valenciana',
+      '2026-10-12': 'Festa Nacional d\'Espanya',
+      '2026-12-07': 'No lectiu local (Carcaixent)',
+      '2026-12-08': 'Dia de la Immaculada Concepció',
+      '2027-03-17': 'No lectiu local (Falles)',
+      '2027-03-18': 'No lectiu local (Falles)',
+      '2027-03-19': 'Sant Josep / Falles'
+    };
+
+    // Periodes de vacances (inclusius)
+    const VACATION_PERIODS = [
+      {
+        name: 'Vacances de Nadal 🎄',
+        start: new Date(2026, 11, 22), // 22 desembre 2026
+        end: new Date(2027, 0, 6)      // 6 gener 2027
+      },
+      {
+        name: 'Vacances de Pasqua 🐣',
+        start: new Date(2027, 2, 25),  // 25 març 2027
+        end: new Date(2027, 3, 5)      // 5 abril 2027
+      }
+    ];
+
+    function checkSchoolTomorrow(baseDate = new Date()) {
+      // Data de demà
+      const tomorrow = new Date(baseDate);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      
+      // Ajustem hores a 00:00:00 per a comparacions exactes
+      tomorrow.setHours(0, 0, 0, 0);
+
+      const dayOfWeek = tomorrow.getDay(); // 0: Diumenge, 1: Dilluns, ..., 6: Dissabte
+      const year = tomorrow.getFullYear();
+      const month = String(tomorrow.getMonth() + 1).padStart(2, '0');
+      const day = String(tomorrow.getDate()).padStart(2, '0');
+      const formattedDateStr = `${year}-${month}-${day}`;
+      
+      // Format de data en català per a mostrar
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      const dateFormattedDisplay = tomorrow.toLocaleDateString('ca-ES', options);
+
+      // 1. Fora del curs escolar (Vacances d'Estiu)
+      const startDate = new Date(SCHOOL_YEAR.start); startDate.setHours(0,0,0,0);
+      const endDate = new Date(SCHOOL_YEAR.end); endDate.setHours(0,0,0,0);
+
+      if (tomorrow < startDate || tomorrow > endDate) {
+        return {
+          hasSchool: false,
+          reason: "No! Estem de vacances d'estiu! ☀️️🌊",
+          dateText: `Demà és ${dateFormattedDisplay}`
+        };
+      }
+
+      // 2. Cap de setmana
+      if (dayOfWeek === 0) {
+        return {
+          hasSchool: false,
+          reason: "No! Demà és diumenge! 😴",
+          dateText: `Demà és ${dateFormattedDisplay}`
+        };
+      }
+      if (dayOfWeek === 6) {
+        return {
+          hasSchool: false,
+          reason: "No! Demà és dissabte! 🎉",
+          dateText: `Demà és ${dateFormattedDisplay}`
+        };
+      }
+
+      // 3. Períodes de Vacances (Nadal / Pasqua)
+      for (const period of VACATION_PERIODS) {
+        const pStart = new Date(period.start); pStart.setHours(0,0,0,0);
+        const pEnd = new Date(period.end); pEnd.setHours(0,0,0,0);
+        
+        if (tomorrow >= pStart && tomorrow <= pEnd) {
+          return {
+            hasSchool: false,
+            reason: `No! Estem a les ${period.name}!`,
+            dateText: `Demà és ${dateFormattedDisplay}`
+          };
+        }
+      }
+
+      // 4. Festius o dies no lectius concrets
+      if (HOLIDAYS[formattedDateStr]) {
+        return {
+          hasSchool: false,
+          reason: `No! És festiu: ${HOLIDAYS[formattedDateStr]} 🎉`,
+          dateText: `Demà és ${dateFormattedDisplay}`
+        };
+      }
+
+      // 5. Dia lectiu normal
+      return {
+        hasSchool: true,
+        reason: "SÍ! Demà hi ha escola. Prepara la motxilla! 🎒📚",
+        dateText: `Demà és ${dateFormattedDisplay}`
+      };
+    }
+
+    // Àudio senzill utilitzant Web Audio API
+    function playSound(isYes) {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        if (isYes) {
+          osc.frequency.setValueAtTime(440, ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.2);
+        } else {
+          osc.frequency.setValueAtTime(330, ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(165, ctx.currentTime + 0.3);
+        }
+
+        gain.gain.setValueAtTime(0.15, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+
+        osc.start();
+        osc.stop(ctx.currentTime + 0.3);
+      } catch (e) {
+        // Silenci si l'àudio no està permès pel navegador
+      }
+    }
+
+    // Esdeveniments
+    const checkBtn = document.getElementById('checkBtn');
+    const resultBox = document.getElementById('resultBox');
+    const statusBadge = document.getElementById('statusBadge');
+    const reasonText = document.getElementById('reasonText');
+    const dateInfo = document.getElementById('dateInfo');
+
+    checkBtn.addEventListener('click', () => {
+      const res = checkSchoolTomorrow();
+
+      statusBadge.textContent = res.hasSchool ? "SÍ!" : "NO!";
+      reasonText.textContent = res.reason;
+      dateInfo.textContent = res.dateText;
+
+      resultBox.className = `result-box show ${res.hasSchool ? 'yes' : 'no'}`;
+
+      playSound(res.hasSchool);
+
+      if (!res.hasSchool) {
+        jsConfetti.addConfetti({
+          emojis: ['🎉', '✨', '🎈', '⚽', '🏖️'],
+          emojiSize: 30,
+          confettiNumber: 35,
+        });
+      }
+    });
+  </script>
+</body>
+</html>
